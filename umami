@@ -90,4 +90,3 @@ alter table FICHERO add constraint fk_fichero_empleados foreign key(id_empleado)
 alter table ROTACION add constraint fk_rotacion_empleados foreign key(id_empleado) references EMPLEADOS(id_empleado);
 -- TABLA PERFORMANCE
 alter table PERFORMANCE add constraint fk_performance_empleados foreign key(id_empleado) references EMPLEADOS(id_empleado);
-
