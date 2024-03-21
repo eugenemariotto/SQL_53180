@@ -1,6 +1,7 @@
 DROP SCHEMA if exists administracion_de_personal;
 CREATE SCHEMA ADMINISTRACION_DE_PERSONAL;
 USE ADMINISTRACION_DE_PERSONAL;
+
 CREATE TABLE empleados (
 ID_EMPLEADO INT	not null auto_increment,
 NOMBRE Varchar(50) default "nombre"	not null,
@@ -9,7 +10,7 @@ DNI BIGINT not null,
 CUIL BIGINT not null,
 GENERO SET("F","M","No binario") not null,
 DIRECCION VARCHAR(50) default "nada",
-EMAIL VARCHAR(50) not null unique,
+EMAIL VARCHAR(50) not null unique, INDEX IDX_EMAIL(EMAIL),
 SUELDO DOUBLE,
 ID_LEVEL INT not null,
 ID_SUELDOS INT not null,
@@ -52,7 +53,7 @@ PRIMARY KEY (ID_ZONA)
 
 CREATE TABLE FICHERO (
 ID_FICHERO	INT auto_increment,
-id_empleado	INT,
+ID_EMPLEADO	INT,
 fecha_de_ingreso DATE,	
 fecha_de_egreso	DATE,	
 PRIMARY KEY (ID_FICHERO)
@@ -70,13 +71,19 @@ CREATE TABLE PERFORMANCE (
 ID_PERF	INT,
 PERFORMANCE_DESC VARCHAR(150),
 FECHA_PERF DATE,
-ID_EMPLOYEE	INT,
-PRIMARY KEY (ID_PERF,ID_EMPLOYEE,FECHA_PERF)
+ID_EMPLEADO	INT,
+PRIMARY KEY (ID_PERF,ID_EMPLEADO,FECHA_PERF)
 );
--- constraint unica 
+-- CONSTRAINT 
+-- TABLA EMPLEADOS 
 alter table EMPLEADOS add constraint fk_empleados_level foreign key(id_level) references LEVEL(id_level);
 alter table EMPLEADOS add constraint fk_empleados_sueldos foreign key(id_sueldos) references SUELDOS(id_sueldos);
 alter table EMPLEADOS add constraint fk_empleados_area foreign key(id_area) references AREA(id_area);
 alter table EMPLEADOS add constraint fk_empleados_contrato foreign key(id_contrato) references CONTRATO(id_contrato);
 alter table EMPLEADOS add constraint fk_empleados_zona foreign key(id_zona) references ZONA(id_zona);
-
+-- TABLA FICHERO 
+alter table FICHERO add constraint fk_fichero_empleados foreign key(id_empleado) references EMPLEADOS(id_empleado);
+-- TABLA ROTACION
+alter table ROTACION add constraint fk_rotacion_empleados foreign key(id_empleado) references EMPLEADOS(id_empleado);
+-- TABLA PERFORMANCE
+alter table PERFORMANCE add constraint fk_performance_empleados foreign key(id_empleado) references EMPLEADOS(id_empleado);
