@@ -1,92 +1,462 @@
-DROP SCHEMA if exists UMAMI;
-CREATE SCHEMA UMAMI;
-USE UMAMI;
-
+drop schema if exists umami;
+create database umami;
+use umami;
+-- drop table if exists area;
+CREATE TABLE area (
+  ID_AREA int NOT NULL,
+  DESC_AREA varchar(50) DEFAULT NULL,
+  PRIMARY KEY (ID_AREA)
+) ;
+-- drop table if exists contrato;
+CREATE TABLE contrato (
+  ID_CONTRATO int NOT NULL,
+  DESC_CONTRATO varchar(50) DEFAULT NULL,
+  PRIMARY KEY (ID_CONTRATO)
+) ;
+-- drop table if exists zona;
+CREATE TABLE zona (
+    ID_ZONA INT NOT NULL,
+    DESC_ZONA VARCHAR(50) DEFAULT NULL,
+    PRIMARY KEY (ID_ZONA)
+) ;
+-- drop table if exists nivel;
+CREATE TABLE nivel (
+  ID_NIVEL int NOT NULL,
+  DESC_NIVEL varchar(50) DEFAULT NULL,
+  PRIMARY KEY (ID_NIVEL)
+) ;
+-- drop table if exists empleados;
 CREATE TABLE empleados (
-ID_EMPLEADO INT	not null auto_increment,
-NOMBRE Varchar(50) default "nombre"	not null,
-APELLIDO Varchar(50) default "apellido"	not null,
-DNI BIGINT not null,
-CUIL BIGINT not null,
-GENERO SET("F","M","No binario") not null,
-DIRECCION VARCHAR(50) default "nada",
-EMAIL VARCHAR(50) not null unique, INDEX IDX_EMAIL(EMAIL),
-SUELDO DOUBLE,
-ID_LEVEL INT not null,
-ID_SUELDOS INT not null,
-ID_AREA INT not null,
-ID_CONTRATO INT not null,
-ID_ZONA INT not null,
-ID_LEADER INT not null,
-PRIMARY KEY (ID_EMPLEADO)
-) COMMENT "TABLA EMPLEADOS";
+  ID_EMPLEADO int NOT NULL AUTO_INCREMENT,
+  PRIMER_NOMBRE varchar(50) NOT NULL,
+  SEGUNDO_NOMBRE varchar(50) DEFAULT NULL,
+  PRIMER_APELLIDO varchar(50) NOT NULL,
+  SEGUNDO_APELLIDO varchar(50) DEFAULT NULL,
+  DNI bigint NOT NULL,
+  CUIL bigint NOT NULL,
+  GENERO set('F','M','No binario') NOT NULL,
+  CALLE varchar(50) NOT NULL,
+  NUMERACION varchar(50) NOT NULL,
+  PISO varchar(50) DEFAULT NULL,
+  DEPARTAMENTO varchar(50) DEFAULT NULL,
+  CODIGO_POSTAL int DEFAULT NULL,
+  CIUDAD varchar(50) NOT NULL,
+  EMAIL varchar(50) NOT NULL,
+  TIPO_DE_EMPLEADOS set('C-Level','Leader','Team-Player') DEFAULT NULL,
+  FECHA_ALTA date DEFAULT NULL,
+  ID_NIVEL int NOT NULL,
+  ID_AREA int NOT NULL,
+  ID_CONTRATO int NOT NULL,
+  ID_ZONA int NOT NULL,
+  ID_LIDER int DEFAULT NULL,
+  PRIMARY KEY (ID_EMPLEADO),
+  UNIQUE KEY EMAIL (EMAIL),
+  KEY IDX_EMAIL (EMAIL),
+  KEY fk_empleados_nivel (ID_NIVEL),
+  KEY fk_empleados_area (ID_AREA),
+  KEY fk_empleados_contrato (ID_CONTRATO),
+  KEY fk_empleados_zona (ID_ZONA),
+  KEY fk_empleados_empleados (ID_LIDER),
+  CONSTRAINT fk_empleados_area FOREIGN KEY (ID_AREA) REFERENCES area (ID_AREA),
+  CONSTRAINT fk_empleados_contrato FOREIGN KEY (ID_CONTRATO) REFERENCES contrato (ID_CONTRATO),
+  CONSTRAINT fk_empleados_empleados FOREIGN KEY (ID_LIDER) REFERENCES empleados (ID_EMPLEADO),
+  CONSTRAINT fk_empleados_nivel FOREIGN KEY (ID_NIVEL) REFERENCES nivel (ID_NIVEL),
+  CONSTRAINT fk_empleados_zona FOREIGN KEY (ID_ZONA) REFERENCES zona (ID_ZONA)
+) ;
+-- drop table if exists evaluacion;
+CREATE TABLE evaluacion (
+  ID_EVAL int NOT NULL,
+  EVALUACION_DESC varchar(150) DEFAULT NULL,
+  FECHA_EVAL date NOT NULL,
+  ID_EMPLEADO int NOT NULL,
+  PRIMARY KEY (ID_EVAL,ID_EMPLEADO,FECHA_EVAL),
+  KEY fk_evaluacion_empleados (ID_EMPLEADO),
+  CONSTRAINT fk_evaluacion_empleados FOREIGN KEY (ID_EMPLEADO) REFERENCES empleados (ID_EMPLEADO)
+) ;
+-- drop table if exists ficher;
+CREATE TABLE fichero (
+  ID_FICHERO int NOT NULL AUTO_INCREMENT,
+  ID_EMPLEADO int DEFAULT NULL,
+  fecha_hora_ingreso datetime DEFAULT NULL,
+  fecha_hora_egreso datetime DEFAULT NULL,
+  PRIMARY KEY (ID_FICHERO),
+  KEY fk_fichero_empleados (ID_EMPLEADO),
+  CONSTRAINT fk_fichero_empleados FOREIGN KEY (ID_EMPLEADO) REFERENCES empleados (ID_EMPLEADO)
+) ;
+-- drop table if exists rotacion;
+CREATE TABLE rotacion (
+  ID_BAJA int NOT NULL AUTO_INCREMENT,
+  ID_EMPLEADO int DEFAULT NULL,
+  FECHA_DE_BAJA date DEFAULT NULL,
+  PRIMARY KEY (ID_BAJA),
+  KEY fk_rotacion_empleados (ID_EMPLEADO),
+  CONSTRAINT fk_rotacion_empleados FOREIGN KEY (ID_EMPLEADO) REFERENCES empleados (ID_EMPLEADO)
+) ;
+-- drop table if exists sueldos;
+CREATE TABLE sueldos (
+  ID_SUELDO int NOT NULL AUTO_INCREMENT,
+  ID_EMPLEADO int DEFAULT NULL,
+  fecha_de_sueldo DATE DEFAULT NULL,
+  MONTO_USD double DEFAULT NULL,
+  MONTO_ARS double DEFAULT NULL,
+  PRIMARY KEY (ID_SUELDO),
+  KEY fk_sueldos_empleados (ID_EMPLEADO),
+  CONSTRAINT fk_sueldos_empleados FOREIGN KEY (ID_EMPLEADO) REFERENCES empleados (ID_EMPLEADO)
+) ;
+-- INSERTS------------------------------------------------------
+insert INTO ZONA (id_zona, desc_zona)
+VALUES 
+(1,'CABA'),
+(2,'CORDOBA'),
+(3,'NORTE'),
+(4,'SUR'),
+(99,'REMOTO');
 
-CREATE TABLE LEVEL (
-ID_LEVEL INT not null,
-DESC_LEVEL VARCHAR(50),
-primary key (ID_LEVEL)
+insert INTO AREA (id_area, desc_area)
+VALUES 
+(1,"FINANCE"),
+(2,"DATA"),
+(3,"PRODUCT"),
+(4,"OPERATIONS"),
+(5,"IT"),
+(6,"DEVOPS"),
+(7,"PEOPLE"),
+(8,"MKT"),
+(9,"BIZ DEV");
+
+insert INTO contrato (id_contrato, desc_contrato)
+VALUES (1, "Contractor"),
+(2, "Monotributista"),
+(3, "Rel de dependencia");
+
+insert INTO nivel (id_nivel, desc_nivel)
+VALUES 
+(1, "IT0"),
+(2, "IT1"),
+(3, "IT2"),
+(4, "IT3"),
+(5, "IT4"),
+(6, "IT5"),
+(7, "IT6"),
+(8, "Staff 0"),
+(9, "Staff 1"),
+(10, "Staff 2"),
+(11, "Staff 3"),
+(12, "Staff 4"),
+(13, "Staff 5"),
+(14, "Staff 6"),
+(15, "PD 0"),
+(16, "PD 1"),
+(17, "PD 2"),
+(18, "PD 3"),
+(19, "PD 4"),
+(20, "PD 5"),
+(21, "PD 6");
+
+  INSERT INTO empleados (ID_EMPLEADO,PRIMER_NOMBRE,SEGUNDO_NOMBRE,PRIMER_APELLIDO,SEGUNDO_APELLIDO,DNI,CUIL,GENERO,CALLE,NUMERACION,PISO,DEPARTAMENTO,CODIGO_POSTAL,CIUDAD,EMAIL,TIPO_DE_EMPLEADOS,FECHA_ALTA,ID_NIVEL,ID_AREA,ID_CONTRATO,ID_ZONA,ID_LIDER) values
+  (1,'Lucas','Alejandro','Gomez','Fernandez',11223344,20987654321,'M','Calle San Martin','123','3','A',1001,'CABA','lucas@gmail.com','C-Level','2023-01-15',5,2,3,1,1),
+  (2,'Valeria',NULL,'Rodriguez','Lopez',22334455,30987654322,'F','Av. Libertador','567','5','B',2002,'CORDOBA','valeria@hotmail.com','Leader','2023-02-20',4,1,2,2,1),
+  (3,'Diego','Manuel','Fernandez','Martinez',33445566,40987654323,'M','Calle Mayo','890','7','C',3003,'NORTE','diego@yahoo.com','Team-Player','2023-03-10',3,3,1,3,1),
+  (4,'Carla','Julieta','Perez','Sanchez',44556677,50987654324,'F','Calle Rivadavia','123','9','D',4004,'SUR','carla@gmail.com','Leader','2023-04-05',2,4,3,4,1),
+  (5,'Juan','Pablo','Lopez','Gutierrez',55667788,60987654325,'M','Av. Corrientes','456','11','E',5005,'REMOTO','juan@hotmail.com','C-Level','2023-05-15',1,5,1,99,1),
+  (6,'Mariana',NULL,'Alvarez','Diaz',66778899,70987654326,'F','Av. Belgrano','789','13','F',6006,'Buenos Aires','mariana@yahoo.com','Team-Player','2023-06-20',6,6,2,3,1),
+  (7,'Roberto','Carlos','Sanchez','Perez',77889900,80987654327,'M','Calle Jujuy','1011','15','G',7007,'CORDOBA','roberto@gmail.com','Leader','2023-07-10',5,7,3,4,1),
+  (8,'Laura',NULL,'Martinez','Fernandez',88990011,90987654328,'F','Av. San Juan','1213','17','H',8008,'NORTE','laura@hotmail.com','Team-Player','2023-08-05',4,8,1,1,1),
+  (9,'Marcos','Javier','Gonzalez','Gomez',99001122,100987654329,'M','Calle Entre Rios','1415','19','I',9009,'SUR','marcos@yahoo.com','C-Level','2023-09-15',3,9,2,2,1),
+  (10,'Romina',NULL,'Lopez','Martinez',11223344,110987654330,'F','Av. Colon','1617','21','J',10010,'REMOTO','romina@gmail.com','Leader','2023-10-20',2,1,3,99,1),
+  (11,'Lucas','Ezequiel','Fernandez','Garcia',22334455,120987654331,'M','Calle Uruguay','1819','23','K',11011,'CABA','lucas@yahoo.com','Team-Player','2023-11-10',1,2,1,1,1),
+  (12,'Ana',NULL,'Sanchez','Lopez',33445566,130987654332,'F','Av. Pellegrini','2021','25','L',12012,'CORDOBA','ana@hotmail.com','C-Level','2023-12-05',6,3,2,3,1),
+  (13,'Ezequiel','Gonzalo','Martinez','Perez',44556677,140987654333,'M','Calle Laprida','2223','27','M',13013,'NORTE','ezequiel@gmail.com','Leader','2024-01-15',5,4,3,4,1),
+  (14,'Carolina',NULL,'Lopez','Fernandez',55667788,150987654334,'F','Av. San Martin','2425','29','N',14014,'SUR','carolina@yahoo.com','Team-Player','2024-02-20',4,5,1,1,1),
+  (15,'Facundo','Martin','Gomez','Diaz',66778899,160987654335,'M','Calle Rivadavia','2627','31','O',15015,'REMOTO','facundo@hotmail.com','C-Level','2024-03-10',3,6,2,2,1),
+  (16,'Agustina',NULL,'Perez','Martinez',77889900,170987654336,'F','Av. Libertador','2829','33','P',16016,'Buenos Aires','agustina1@gmail.com','Leader','2024-04-05',2,7,3,3,1),
+  (17,'Leonardo','Nicolas','Martinez','Gomez',88990011,180987654337,'M','Calle San Martin','3031','35','Q',17017,'CORDOBA','leonardo@yahoo.com','Team-Player','2024-05-15',1,8,1,4,1),
+  (18,'Camila','Florencia','Garcia','Alvarez',99001122,190987654338,'F','Calle Mayo','3233','37','R',18018,'NORTE','camila@hotmail.com','C-Level','2024-06-20',6,9,2,1,1),
+  (19,'Gonzalo',NULL,'Rodriguez','Sanchez',11223344,200987654339,'M','Av. Corrientes','3435','39','S',19019,'SUR','gonzalo@gmail.com','Leader','2024-07-10',5,1,3,2,1),
+  (20,'Abril',NULL,'Fernandez','Martinez',22334455,210987654340,'F','Av. Rivadavia','3637','41','T',20020,'REMOTO','abril@yahoo.com','Team-Player','2024-08-05',4,2,1,3,2),
+  (21,'Santiago','Matias','Perez','Lopez',33445566,220987654341,'M','Calle Uruguay','3840','43','U',21021,'CABA','santiago@hotmail.com','C-Level','2024-09-15',3,3,2,1,1),
+  (22,'Valentina',NULL,'Martinez','Gutierrez',44556677,230987654342,'F','Av. Libertador','4041','45','V',22022,'CORDOBA','valentina@gmail.com','Leader','2024-10-20',2,4,3,2,2),
+  (23,'Lautaro','Agustin','Gomez','Fernandez',55667788,240987654343,'M','Calle San Martin','4243','47','W',23023,'NORTE','lautaro@yahoo.com','Team-Player','2024-11-10',1,5,1,3,2),
+  (24,'Lara',NULL,'Rodriguez','Sanchez',66778899,250987654344,'F','Calle Mayo','4445','49','X',24024,'SUR','lara@hotmail.com','C-Level','2024-12-05',6,6,2,2,1),
+  (25,'Joaquin','Maximiliano','Fernandez','Gomez',77889900,260987654345,'M','Av. Corrientes','4647','51','Y',25025,'REMOTO','joaquin@gmail.com','Leader','2025-01-15',6,7,3,1,2),
+  (26,'Jimena',NULL,'Martinez','Lopez',88990011,270987654346,'F','Av. San Juan','4849','53','Z',26026,'Buenos Aires','jimena@yahoo.com','Team-Player','2025-02-20',6,8,1,2,2),
+  (27,'Matias','Lucas','Gonzalez','Fernandez',99001122,280987654347,'M','Calle Uruguay','5051','55','AA',27027,'CORDOBA','matias@hotmail.com','C-Level','2025-03-10',5,9,2,3,1),
+  (28,'Agustina',NULL,'Perez','Martinez',11223344,290987654348,'F','Av. Libertador','5253','57','BB',28028,'NORTE','agustina@gmail.com','Leader','2025-04-05',2,1,3,4,2),
+  (29,'Gaston',NULL,'Martinez','Gomez',22334455,300987654349,'M','Calle San Martin','5455','59','CC',29029,'SUR','gaston1@yahoo.com','Team-Player','2025-05-15',1,2,1,1,2),
+  (30,'Camila','Julieta','Gomez','Sanchez',33445566,310987654350,'F','Calle Mayo','5657','61','DD',30030,'REMOTO','camila1@hotmail.com','C-Level','2025-06-20',6,3,2,2,1),
+  (31,'Luciano',NULL,'Sanchez','Fernandez',44556677,320987654351,'M','Av. Corrientes','5859','63','EE',31031,'CABA','luciano1@hotmail.com','Leader','2025-07-10',5,4,3,3,2),
+  (32,'Catalina',NULL,'Lopez','Garcia',55667788,330987654352,'F','Av. San Juan','6061','65','FF',32032,'CORDOBA','catalina1@yahoo.com','Team-Player','2025-08-05',18,5,1,4,2),
+  (33,'Nicolas','Miguel','Garcia','Martinez',66778899,340987654353,'M','Calle Uruguay','6263','67','GG',33033,'NORTE','nicolas2@gmail.com','C-Level','2025-09-15',15,6,2,1,1),
+  (34,'Sofia',NULL,'Martinez','Perez',77889900,350987654354,'F','Av. Libertador','6465','69','HH',34034,'SUR','sofia3@hotmail.com','Leader','2025-10-20',11,7,3,2,2),
+  (35,'Facundo','Tomas','Gomez','Lopez',88990011,360987654355,'M','Calle San Martin','6667','71','II',35035,'REMOTO','facundo3@yahoo.com','Team-Player','2025-11-10',10,8,1,3,2),
+  (36,'Abril',NULL,'Perez','Martinez',99001122,370987654356,'F','Calle Mayo','6869','73','JJ',36036,'CABA','abril3@hotmail.com','C-Level','2025-12-05',6,9,2,4,1),
+  (37,'Lautaro','Ignacio','Fernandez','Gonzalez',11223344,380987654357,'M','Av. Corrientes','7071','75','KK',37037,'CORDOBA','lautaro3@gmail.com','Leader','2026-01-15',8,1,3,1,2),
+  (38,'Lara',NULL,'Rodriguez','Sanchez',22334455,390987654358,'F','Av. San Juan','7273','77','LL',38038,'NORTE','lara3@yahoo.com','Team-Player','2026-02-20',7,2,1,2,2),
+  (39,'Joaquin','Nicolas','Fernandez','Martinez',33445566,400987654359,'M','Calle Uruguay','7475','79','MM',39039,'SUR','joaquin3@hotmail.com','C-Level','2026-03-10',6,3,2,3,1);
+
+INSERT INTO EVALUACION (id_eval, evaluacion_desc, fecha_eval, id_empleado)
+VALUES 
+    (3, 'evaluación 1', '2026-03-15', 1),
+    (4, 'evaluación 2', '2026-04-20', 2),
+    (5, 'evaluación 3', '2026-05-25', 3),
+    (6, 'evaluación 4', '2026-06-30', 4),
+    (7, 'evaluación 5', '2026-07-15', 5),
+    (8, 'evaluación 6', '2026-08-20', 6),
+    (9, 'evaluación 7', '2026-09-25', 7),
+    (10, 'evaluación 8', '2026-10-30', 8),
+    (11, 'evaluación 9', '2026-11-15', 9),
+    (12, 'evaluación 10', '2026-12-20', 10),
+    (13, 'evaluación 11', '2027-01-25', 1),
+    (14, 'evaluación 12', '2027-02-20', 2),
+    (15, 'evaluación 13', '2027-03-15', 3),
+    (16, 'evaluación 14', '2027-04-20', 4),
+    (17, 'evaluación 15', '2027-05-25', 5),
+    (18, 'evaluación 16', '2027-06-30', 6),
+    (19, 'evaluación 17', '2027-07-15', 7),
+    (20, 'evaluación 18', '2027-08-20', 8),
+    (21, 'evaluación 19', '2027-09-25', 9),
+    (22, 'evaluación 20', '2027-10-30', 10),
+    (23, 'evaluación 21', '2027-11-15', 1),
+    (24, 'evaluación 22', '2027-12-20', 2),
+    (25, 'evaluación 23', '2028-01-25', 3),
+    (26, 'evaluación 24', '2028-02-20', 4),
+    (27, 'evaluación 25', '2028-03-15', 5),
+    (28, 'evaluación 26', '2028-04-20', 6),
+    (29, 'evaluación 27', '2028-05-25', 7),
+    (30, 'evaluación 28', '2028-06-30', 8),
+    (31, 'evaluación 29', '2028-07-15', 9),
+    (32, 'evaluación 30', '2028-08-20', 10);
+
+-- Insertar 30 registros en la tabla ROTACION
+INSERT INTO ROTACION (id_baja, id_empleado, fecha_de_baja)
+VALUES 
+    (2, 2, '2026-03-15'),
+    (3, 3, '2026-04-20'),
+    (4, 4, '2026-05-25'),
+    (5, 5, '2026-06-30'),
+    (6, 6, '2026-07-15'),
+    (7, 7, '2026-08-20'),
+    (8, 8, '2026-09-25'),
+    (9, 9, '2026-10-30'),
+    (10, 10, '2026-11-15');
+-- Insertar 20 registros adicionales en la tabla SUELDOS
+INSERT INTO SUELDOS (id_empleado, fecha_de_sueldo, MONTO_USD, MONTO_ARS)
+VALUES 
+    (1, "2023-01-01", 1080, 71000),
+    (2, "2023-01-01", 1100, 73000),
+    (3, "2023-01-01", 1120, 75000),
+    (4, "2023-01-01", 1140, 77000),
+    (5, "2023-01-01", 1160, 79000),
+    (6, "2023-01-01", 1180, 81000),
+    (7, "2023-01-01", 1200, 83000),
+    (8, "2023-01-01", 1220, 85000),
+    (9, "2023-01-01", 1240, 87000),
+    (10, "2023-01-01", 1260, 89000),
+    (11, "2023-01-01", 1280, 91000),
+    (12, "2023-01-01", 3000, null),
+    (13, "2023-01-01", 3500, null),
+    (24, "2023-01-01", 7000, 120000),
+    (25, "2023-01-01", 1000, 99000),
+    (26, "2023-01-01", 2300, 101000),
+    (27, "2023-01-01", null, 800000),
+    (28, "2023-01-01", null, 1050000),
+    (29, "2023-01-01", null, 1070000),
+    (30, "2023-01-01", null, 1090000);
+
+-- Insertar 20 registros adicionales en la tabla FICHERO
+INSERT INTO FICHERO (id_fichero, id_empleado, fecha_hora_ingreso, fecha_hora_egreso)
+VALUES 
+    (2, 2, '2020-09-25 13:00:00', '2020-09-25 17:00:00'),
+    (3, 3, '2020-10-25 13:00:00', '2020-10-25 17:00:00'),
+    (4, 4, '2020-11-25 13:00:00', '2020-11-25 17:00:00'),
+    (5, 5, '2020-12-25 13:00:00', '2020-12-25 17:00:00'),
+    (6, 6, '2021-01-25 13:00:00', '2021-01-25 17:00:00'),
+    (7, 7, '2021-02-25 13:00:00', '2021-02-25 17:00:00'),
+    (8, 8, '2021-03-25 13:00:00', '2021-03-25 17:00:00'),
+    (9, 9, '2021-04-25 13:00:00', '2021-04-25 17:00:00'),
+    (10, 10, '2021-05-25 13:00:00', '2021-05-25 17:00:00'),
+    (11, 11, '2021-06-25 13:00:00', '2021-06-25 17:00:00'),
+    (12, 12, '2021-07-25 13:00:00', '2021-07-25 17:00:00'),
+    (13, 13, '2021-08-25 13:00:00', '2021-08-25 17:00:00'),
+    (14, 14, '2021-09-25 13:00:00', '2021-09-25 17:00:00'),
+    (15, 15, '2021-10-25 13:00:00', '2021-10-25 17:00:00'),
+    (16, 16, '2021-11-25 13:00:00', '2021-11-25 17:00:00'),
+    (17, 17, '2021-12-25 13:00:00', '2021-12-25 17:00:00'),
+    (18, 18, '2022-01-25 13:00:00', '2022-01-25 17:00:00'),
+    (19, 19, '2022-02-25 13:00:00', '2022-02-25 17:00:00'),
+    (20, 20, '2022-03-25 13:00:00', '2022-03-25 17:00:00');
+
+
+-- VIEWS -----------------------------------------------------------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE VIEW bajas_ano AS 
+select e.ID_EMPLEADO AS ID_EMPLEADO,
+(to_days(r.FECHA_DE_BAJA) - to_days(e.FECHA_ALTA)) AS DIAS_DE_DIFERENCIA 
+from empleados e 
+join rotacion r 
+ON e.ID_EMPLEADO = r.ID_EMPLEADO;
+
+CREATE VIEW empleados_de_caba AS 
+select e.ID_EMPLEADO AS ID_EMPLEADO,
+e.PRIMER_NOMBRE AS PRIMER_NOMBRE,
+e.PRIMER_APELLIDO AS PRIMER_APELLIDO,
+e.ID_NIVEL AS ID_NIVEL,
+n.DESC_NIVEL AS DESC_NIVEL 
+from empleados e 
+join umami.area a 
+on e.ID_AREA = a.ID_AREA 
+join umami.nivel n 
+on e.ID_NIVEL = n.ID_NIVEL
+where a.DESC_AREA = 'CABA';
+
+CREATE VIEW empleados_por_area_y_evaluacion AS 
+select e.ID_EMPLEADO AS ID_EMPLEADO,
+e.PRIMER_NOMBRE AS PRIMER_NOMBRE,
+e.PRIMER_APELLIDO AS PRIMER_APELLIDO,
+a.DESC_AREA AS DESC_AREA,
+ev.EVALUACION_DESC AS EVALUACION_DESC 
+from umami.empleados e 
+join umami.area a 
+on e.ID_AREA = a.ID_AREA 
+join evaluacion ev 
+on e.ID_EMPLEADO = ev.ID_EMPLEADO;
+
+CREATE VIEW inactivos AS 
+select e.ID_EMPLEADO AS ID_EMPLEADO,
+e.PRIMER_NOMBRE AS PRIMER_NOMBRE,
+e.PRIMER_APELLIDO AS PRIMER_APELLIDO,
+r.FECHA_DE_BAJA AS FECHA_DE_BAJA,
+r.ID_BAJA AS ID_BAJA 
+from empleados e 
+join umami.rotacion r 
+on e.ID_EMPLEADO = r.ID_EMPLEADO;
+
+-- funciones ------------------------------------------------------------------------------------------------------------------------
+delimiter //
+CREATE FUNCTION premio_desempenio(p_id INT,p_premio FLOAT) 
+  	RETURNS FLOAT
+    READS SQL DATA
+
+BEGIN
+DECLARE premio_desempenio FLOAT;
+		select monto_usd * p_premio INTO premio_desempenio
+        from sueldos
+        where id_empleado = p_id;
+        RETURN premio_desempenio;
+END//
+DELIMITER ;
+
+-- select premio_desempenio (13,1.30) as "Bono por buen desempeño"
+
+delimiter //
+CREATE FUNCTION monto_teletrabajo(m_id INT,m_teletrabajo FLOAT) 
+  	RETURNS FLOAT
+    READS SQL DATA
+
+BEGIN
+DECLARE monto_teletrabajo FLOAT;
+		select monto_usd / m_teletrabajo INTO monto_teletrabajo
+        from sueldos
+        where id_empleado = m_id;
+        RETURN monto_teletrabajo;
+END//
+DELIMITER ;
+
+-- select monto_teletrabajo (1,9) as "Bono teletrabajo";
+
+use umami;
+DROP PROCEDURE IF EXISTS sp_actualizacion_sueldos;
+DELIMITER //
+CREATE PROCEDURE sp_actualizacion_sueldos (IN inflacion_ars DOUBLE, IN bono_usd DOUBLE)
+SQL SECURITY DEFINER
+BEGIN
+        -- seleccione los resultados de ambas consultas
+    SELECT e.primer_nombre, 
+           e.primer_apellido, 
+           s_ars.monto_ARS, 
+           (s_ars.monto_ARS * inflacion_ars) AS "Ajuste de inflación Q1",
+           s_usd.monto_usd, 
+           (s_usd.monto_usd * bono_usd) AS "Bono precarización USD"
+    FROM empleados AS e
+    left JOIN -- encontrar lo que necesitás, no hace un select y lo plasma, solo lo busca.
+    (SELECT id_empleado, monto_ARS
+        FROM sueldos 
+        WHERE monto_usd < 2000 AND fecha_de_sueldo LIKE '2023-01-01')
+        AS s_ars ON e.id_empleado = s_ars.id_empleado
+    left JOIN (SELECT id_empleado, monto_usd 
+        FROM sueldos 
+        WHERE monto_usd > 2000 AND fecha_de_sueldo LIKE '2023-01-01'
+    ) AS s_usd ON e.id_empleado = s_usd.id_empleado;
+
+END //
+DELIMITER ;
+-- call sp_actualizacion_sueldos(1.53, 0.23);
+
+-- creación de la tabla clientes
+CREATE TABLE clientes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50),
+    apellido VARCHAR(50),
+    edad INT
 );
 
-CREATE TABLE SUELDOS (
-ID_SUELDOS INT, 
-DESC_SUELDOS INT,
-PRIMARY KEY	(ID_SUELDOS)
+-- creación de la tabla log_eventos para registrar eventos
+CREATE TABLE log_eventos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    evento VARCHAR(255),
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE AREA (
-ID_AREA	INT,
-DESC_AREA VARCHAR(50),
-PRIMARY KEY (ID_AREA)
-);	
+DELIMITER //
+CREATE TRIGGER tr_cliente_insert AFTER INSERT ON clientes
+FOR EACH ROW
+BEGIN
+    -- acciones a realizar después de un INSERT
+    -- for example, registrar un mensaje en una tabla de log
+    INSERT INTO log_eventos (evento) VALUES (CONCAT('Nuevo cliente: ', NEW.nombre, ' ', NEW.apellido));
+END//
+DELIMITER ;
 
-CREATE TABLE CONTRATO (
-ID_CONTRATO	INT,
-DESC_CONTRATO VARCHAR(50),
-PRIMARY KEY (ID_CONTRATO)
-);
 
-CREATE TABLE ZONA (
-ID_ZONA	INT,
-DESC_ZONA VARCHAR(50), 
-PRIMARY KEY (ID_ZONA)
-);
+-- trigger para update
+DELIMITER //
+CREATE TRIGGER tr_cliente_update AFTER UPDATE ON clientes
+FOR EACH ROW
+BEGIN
+    -- acciones a realizar después de un UPDATE
+    -- por ejemplo, registrar un mensaje en una tabla de log
+    INSERT INTO log_eventos (evento) VALUES (CONCAT('Actualización de cliente: ', OLD.nombre, ' ', OLD.apellido, ' -> ', NEW.nombre, ' ', NEW.apellido));
+END//
+DELIMITER ;
 
-CREATE TABLE FICHERO (
-ID_FICHERO	INT auto_increment,
-ID_EMPLEADO	INT,
-fecha_hora_ingreso DATETIME,	
-fecha_hora_egreso	DATETIME,	
-PRIMARY KEY (ID_FICHERO)
-);
+-- procedimiento almacenado para actualizar la edad de un cliente
+DELIMITER //
+CREATE PROCEDURE actualizar_edad_cliente(
+    IN cliente_id INT,
+    IN nueva_edad INT
+)
+BEGIN
+    UPDATE clientes
+    SET edad = nueva_edad
+    WHERE id = cliente_id;
+END//
+DELIMITER ;
+empleados
+-- trigger para DELETE
+DELIMITER //
+CREATE TRIGGER tr_cliente_delete AFTER DELETE ON clientes
+FOR EACH ROW
+BEGIN
+    -- acciones a realizar después de un DELETE
+    -- por ejemplo, registrar un mensaje en una tabla de log
+    INSERT INTO log_eventos (evento) VALUES (CONCAT('Cliente eliminado: ', OLD.nombre, ' ', OLD.apellido));
+END//
+DELIMITER ;
 
-CREATE TABLE ROTACION (
-ID_BAJA	INT AUTO_INCREMENT,
-ID_EMPLEADO	INT,
-FECHA_DE_BAJA	DATE,
-FECHA_DE_ALTA	DATE,	
-PRIMARY KEY (id_baja)
-);
-
-CREATE TABLE PERFORMANCE (
-ID_PERF	INT,
-PERFORMANCE_DESC VARCHAR(150),
-FECHA_PERF DATE,
-ID_EMPLEADO	INT,
-PRIMARY KEY (ID_PERF,ID_EMPLEADO,FECHA_PERF)
-);
--- CONSTRAINT 
--- TABLA EMPLEADOS - FOREIGN KEYS Y AUTOREFERENCIA LIDER - NUMERO DE LEGAJO
-alter table EMPLEADOS add constraint fk_empleados_level foreign key(id_level) references LEVEL(id_level);
-alter table EMPLEADOS add constraint fk_empleados_sueldos foreign key(id_sueldos) references SUELDOS(id_sueldos);
-alter table EMPLEADOS add constraint fk_empleados_area foreign key(id_area) references AREA(id_area);
-alter table EMPLEADOS add constraint fk_empleados_contrato foreign key(id_contrato) references CONTRATO(id_contrato);
-alter table EMPLEADOS add constraint fk_empleados_zona foreign key(id_zona) references ZONA(id_zona);
-/* ALTERAME LA TABLA EMPLEADOS, AGREGAME LA RESTRICCIÓN LLAMADA "FK_EMPLEADOS_EMPLEADOS" (CONEXIÓN AUTO REFERENCIAL) 
-DONDE ID LEADER BUSQUE EL VALOR DE ID_EMPLEAOS EN LA TABLA EMPLEADOS */
-alter table EMPLEADOS add constraint fk_empleados_empleados foreign key(id_leader) references EMPLEADOS(id_empleado);
--- TABLA FICHERO 
-alter table FICHERO add constraint fk_fichero_empleados foreign key(id_empleado) references EMPLEADOS(id_empleado);
--- TABLA ROTACION
-alter table ROTACION add constraint fk_rotacion_empleados foreign key(id_empleado) references EMPLEADOS(id_empleado);
--- TABLA PERFORMANCE
-alter table PERFORMANCE add constraint fk_performance_empleados foreign key(id_empleado) references EMPLEADOS(id_empleado);
+-- procedimiento almacenado para actualizar la edad de un cliente por su ID
+DELIMITER //
+CREATE PROCEDURE sp_actualizar_edad_cliente(IN cliente_id INT, IN nueva_edad INT)
+BEGIN
+    -- actualizar la edad del cliente especificado por su ID
+    UPDATE clientes SET edad = nueva_edad WHERE id = cliente_id;
+END//
+DELIMITER ;
