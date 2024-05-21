@@ -10,11 +10,11 @@ DECLARE premio_desempenio FLOAT;
 		select monto_usd * p_premio INTO premio_desempenio
         from ajustes
         where id_empleado = p_id;
-        RETURN premio_desempenio;
-END//
+  RETURN premio_desempenio;
+END //
 DELIMITER ;
 
-select premio_desempenio (13,1.30) as "Bono por buen desempeño"
+select premio_desempenio (13,1.30) as "Bono por buen desempeño";
 
 delimiter //
 CREATE FUNCTION monto_teletrabajo(m_id INT,m_teletrabajo FLOAT) 
@@ -26,7 +26,7 @@ DECLARE monto_teletrabajo FLOAT;
 		select monto_usd / m_teletrabajo INTO monto_teletrabajo
         from ajustes
         where id_empleado = m_id;
-        RETURN monto_teletrabajo;
+  RETURN monto_teletrabajo;
 END//
 DELIMITER ;
 
