@@ -1,5 +1,4 @@
 use umami;
-
 -- funciones ------------------------------------------------------------------------------------------------------------------------
 delimiter //
 CREATE FUNCTION premio_desempenio(p_id INT,p_premio FLOAT) 
@@ -15,7 +14,7 @@ DECLARE premio_desempenio FLOAT;
 END//
 DELIMITER ;
 
--- select premio_desempenio (13,1.30) as "Bono por buen desempeño"
+select premio_desempenio (13,1.30) as "Bono por buen desempeño"
 
 delimiter //
 CREATE FUNCTION monto_teletrabajo(m_id INT,m_teletrabajo FLOAT) 
@@ -30,3 +29,5 @@ DECLARE monto_teletrabajo FLOAT;
         RETURN monto_teletrabajo;
 END//
 DELIMITER ;
+
+select monto_teletrabajo (1,9) as "Bono teletrabajo";

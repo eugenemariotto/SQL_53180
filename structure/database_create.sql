@@ -125,12 +125,3 @@ CREATE TABLE ajustes (
   PRIMARY KEY (ID_SUELDO),
   CONSTRAINT fk_ajustes_empleados FOREIGN KEY (ID_EMPLEADO) REFERENCES empleados (ID_EMPLEADO)
 ) ;
-
-
--- Creación de la tabla log_eventos para registrar eventos
-CREATE TABLE log_eventos (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    evento VARCHAR(255),
-    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-

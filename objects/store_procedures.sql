@@ -1,6 +1,4 @@
 use umami;
-
-
 DROP PROCEDURE IF EXISTS sp_actualizacion_sueldos;
 DELIMITER //
 CREATE PROCEDURE sp_actualizacion_sueldos (IN inflacion_ars DOUBLE, IN bono_usd DOUBLE)
@@ -28,7 +26,6 @@ END //
 DELIMITER ;
 call sp_actualizacion_sueldos(1.53, 0.23);
 
-
 -- Procedimiento almacenado para actualizar la edad de un cliente
 DELIMITER $$
 CREATE PROCEDURE actualizar_edad_cliente(
@@ -43,6 +40,16 @@ END$$
 DELIMITER ;
 
 
+-- Trigger para DELETE
+DELIMITER $$
+CREATE TRIGGER tr_cliente_delete AFTER DELETE ON clientes
+FOR EACH ROW
+BEGIN
+    -- Acciones a realizar después de un DELETE
+    -- Por ejemplo, registrar un mensaje en una tabla de log
+    INSERT INTO log_eventos (evento) VALUES (CONCAT('Cliente eliminado: ', OLD.nombre, ' ', OLD.apellido));
+END$$
+DELIMITER ;
 
 -- Procedimiento almacenado para actualizar la edad de un cliente por su ID
 DELIMITER $$

@@ -1,5 +1,4 @@
 use umami;
-
 -- VIEWS ---------------------------------------
 CREATE OR REPLACE VIEW bajas_ano AS 
 select e.ID_EMPLEADO AS ID_EMPLEADO,
@@ -15,7 +14,7 @@ e.PRIMER_APELLIDO AS PRIMER_APELLIDO,
 e.ID_NIVEL AS ID_NIVEL,
 n.DESC_PUESTO AS DESC_PUESTO 
 from empleados e 
-join umami.zona z 
+join umami.ZONA Z 
 on e.ID_ZONA = z.ID_ZONA 
 join umami.nivel n 
 on e.ID_NIVEL = n.ID_NIVEL
