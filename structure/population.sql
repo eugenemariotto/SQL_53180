@@ -5,3 +5,43 @@ LOAD DATA LOCAL INFILE '/structure/data-csv/area.csv'
 INTO TABLE area 
 FIELDS TERMINATED BY ';'  
 LINES TERMINATED BY '\n' IGNORE 1 ROWS;
+
+LOAD DATA LOCAL INFILE '/structure/data-csv/zona.csv' 
+INTO TABLE zona
+FIELDS TERMINATED BY ';'  
+LINES TERMINATED BY '\n' IGNORE 1 ROWS;
+
+LOAD DATA LOCAL INFILE '/structure/data-csv/contrato.csv' 
+INTO TABLE contrato
+FIELDS TERMINATED BY ';'  
+LINES TERMINATED BY '\n' IGNORE 1 ROWS;
+
+LOAD DATA LOCAL INFILE '/structure/data-csv/nivel.csv' 
+INTO TABLE  nivel
+FIELDS TERMINATED BY ';'  
+LINES TERMINATED BY '\n' IGNORE 1 ROWS;
+
+LOAD DATA LOCAL INFILE '/structure/data-csv/empleados.csv' 
+INTO TABLE empleados
+FIELDS TERMINATED BY ';'  
+LINES TERMINATED BY '\n' IGNORE 1 ROWS;
+
+LOAD DATA LOCAL INFILE '/structure/data-csv/ajustes.csv' 
+INTO TABLE ajustes
+FIELDS TERMINATED BY ';'  
+LINES TERMINATED BY '\n' IGNORE 1 ROWS;
+
+LOAD DATA LOCAL INFILE '/structure/data-csv/evaluacion.csv' 
+INTO TABLE evaluacion
+FIELDS TERMINATED BY ';'  
+LINES TERMINATED BY '\n' IGNORE 1 ROWS;
+
+LOAD DATA LOCAL INFILE '/structure/data-csv/fichero.csv' 
+INTO TABLE fichero
+FIELDS TERMINATED BY ';'  
+LINES TERMINATED BY '\n' IGNORE 1 ROWS;
+
+LOAD DATA LOCAL INFILE '/structure/data-csv/rotacion.csv' 
+INTO TABLE rotacion
+FIELDS TERMINATED BY ';'  
+LINES TERMINATED BY '\n' IGNORE 1 ROWS;
